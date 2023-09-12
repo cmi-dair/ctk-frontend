@@ -9,9 +9,9 @@
   } from "flowbite-svelte";
 </script>
 
-<div id="nav-bar">
+<div id="div-nav-bar" data-testid="div-nav-bar">
   <Navbar>
-    <NavBrand href="/">Clinican Toolkit</NavBrand>
+    <NavBrand href="/">Clinician Toolkit</NavBrand>
     <NavUl>
       <NavLi href="/">Home</NavLi>
       <NavLi href="/summarization">Summarization</NavLi>
