@@ -23,6 +23,10 @@ jobs:
           npm ci
           npx playwright install --with-deps
           npm run test
+      - uses: actions/upload-artifact@v3
+        with:
+          name: video-files
+          path: /test-results
 
   lint:
     runs-on: ubuntu-latest
