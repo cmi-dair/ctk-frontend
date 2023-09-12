@@ -6,6 +6,7 @@ test("navbar allows for navigation to the home page", async ({ page }) => {
   expect(homeLink).toBeTruthy()
 
   await homeLink.click()
+  await page.waitForURL("/")
 
   expect(page.url()).toMatch(/http:\/\/localhost:[0-9]+\/$/)
 })

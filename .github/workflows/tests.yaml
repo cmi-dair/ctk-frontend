@@ -19,9 +19,12 @@ jobs:
           node-version: 19
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: |
+      - name: Install dependencies
+        run: |
           npm ci
           npx playwright install --with-deps
+      - name: Run tests
+        run: |
           npm run test
       - uses: actions/upload-artifact@v3
         if: always()
