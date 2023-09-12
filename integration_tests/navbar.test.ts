@@ -1,11 +1,12 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test"
 
 test("navbar allows for navigation to the home page", async ({ page }) => {
-  await page.goto("/summarization");
-  const homeLink = page.getByText("Clinician Toolkit");
-  expect(homeLink).toBeTruthy();
+  await page.goto("/summarization")
+  const homeLink = page.getByText("Clinician Toolkit")
+  expect(homeLink).toBeTruthy()
 
-  await homeLink.click();
+  await homeLink.click()
+  await page.waitForURL("/")
 
-  expect(page.url()).toMatch(/http:\/\/localhost:[0-9]+\/$/);
-});
+  expect(page.url()).toMatch(/http:\/\/localhost:[0-9]+\/$/)
+})

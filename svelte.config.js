@@ -1,5 +1,5 @@
-import adapter from "@sveltejs/adapter-node";
-import { vitePreprocess } from "@sveltejs/kit/vite";
+import adapter from "@sveltejs/adapter-node"
+import { vitePreprocess } from "@sveltejs/kit/vite"
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -14,9 +14,9 @@ const config = {
       out: "build",
       precompress: false,
       envPrefix: "",
-      polyfill: true,
-    }),
-  },
-};
+      polyfill: true
+    })
+  }
+}
 
-export default config;
+export default config
