@@ -30,7 +30,7 @@ jobs:
         if: always()
         with:
           name: video-files
-          path: /test-results
+          path: test-results/**/*.webm
 
   lint:
     runs-on: ubuntu-latest
