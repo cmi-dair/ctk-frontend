@@ -24,6 +24,7 @@ jobs:
           npx playwright install --with-deps
           npm run test
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: video-files
           path: /test-results

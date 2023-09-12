@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
   testDir: "integration_tests",
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
   use: {
-    video: "retain-on-failure"
+    video: "on"
   }
 }
 
