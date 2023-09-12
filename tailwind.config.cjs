@@ -1,8 +1,5 @@
 const config = {
-  content: [
-    "./src/**/*.{html,js,svelte,ts}",
-    "./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}",
-  ],
+  content: ["./src/**/*.{html,js,svelte,ts}", "./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}"],
 
   plugins: [require("flowbite/plugin")],
 
@@ -21,11 +18,11 @@ const config = {
           600: "#EF562F",
           700: "#EB4F27",
           800: "#CC4522",
-          900: "#A5371B",
-        },
-      },
-    },
-  },
-};
+          900: "#A5371B"
+        }
+      }
+    }
+  }
+}
 
-module.exports = config;
+module.exports = config

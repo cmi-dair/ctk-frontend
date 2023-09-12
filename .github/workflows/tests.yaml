@@ -21,7 +21,7 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: |
           npm ci
-          npm run build
+          npx playwright install --with-deps
           npm run test
 
   lint:
