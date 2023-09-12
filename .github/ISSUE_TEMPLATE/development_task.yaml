@@ -3,6 +3,7 @@ description: "This is a template for a development task"
 projects: ["cmi-dair/3"]
 title: "Task: "
 labels: ["task"]
+assignees: ["ReinderVosDeWael"]
 body:
   - type: textarea
     id: description
