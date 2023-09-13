@@ -1,48 +1,96 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
-  import { API_ROUTE } from "../../api/constants";
+  import { API_ROUTE } from "$lib/api/constants"
+  import Toast from "$lib/toast.svelte"
+  import { Button, Checkbox, Label, P, Textarea } from "flowbite-svelte"
 
-  let anonymizedDocument: Promise<string> | string | undefined = undefined;
+  let anonymizedDocumentPromise: Promise<string> | undefined = undefined
+  let summarizedDocumentPromise: Promise<string> | undefined = undefined
+  let verified = false
+  let correctedAnonymizedDocument = ""
+  let errorUnverifiedSubmission = false
+  let errorBadAnonymizationRequest = false
 
-  function handleUpload() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".docx";
-    input.multiple = false;
-    input.onchange = () => {
-      if (!input.files) return;
-      const file = input.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
-      anonymizedDocument = fetch(`${API_ROUTE}/anonymize-docx`, {
+  async function handleAnonymization() {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = ".docx"
+    input.multiple = false
+    input.onchange = async () => {
+      if (!input.files) return
+      const file = input.files[0]
+      const formData = new FormData()
+      formData.append("docx_file", file)
+      anonymizedDocumentPromise = fetch(`${API_ROUTE}/summarization/anonymize_report`, {
         method: "POST",
-        body: formData,
-      }).then((res) => res.text());
-    };
-    input.click();
+        body: formData
+      }).then(async res => await res.text())
+    }
+    input.click()
+  }
+
+  async function handleSummarization() {
+    if (!verified) {
+      errorUnverifiedSubmission = true
+      return
+    }
+    const formData = new FormData()
+    formData.append("report", correctedAnonymizedDocument)
+    summarizedDocumentPromise = fetch(`${API_ROUTE}/summarization/summarize_report`, {
+      method: "POST",
+      body: formData
+    }).then(async res => await res.text())
   }
 </script>
 
 <p>
-  Welcome to our Clinical Report Upload Page! Here, you can securely submit
-  clinical reports for summarization, tailored for parents' understanding. These
-  reports will undergo an anonymization process to ensure patient privacy and
-  confidentiality. Please note that the final responsibility for verifying the
-  effectiveness of anonymization lies with you. Once anonymized, the report can
-  be sent to GPT-4 for generating clear and parent-friendly summaries. These
-  summaries aim to provide parents with easy-to-understand information about
-  their child's health.
+  Please upload the clinical report to proceed with the summarization process. The report will be anonymized before
+  being sent for summarization.
 </p>
 <div>
-  <Button on:click={handleUpload}>Upload</Button>
+  <Button on:click={handleAnonymization}>Upload</Button>
 </div>
 
-{#if anonymizedDocument !== undefined}
-  {#await anonymizedDocument}
-    <p>Uploading...</p>
-  {:then}
-    {anonymizedDocument}
+{#if anonymizedDocumentPromise !== undefined}
+  {#await anonymizedDocumentPromise}
+    <p>Processing...</p>
+  {:then anonymizedDocument}
+    <Label for="summary-id">Anonymized Report:</Label>
+    <Textarea
+      label="Summary"
+      rows="10"
+      id="summary-id"
+      name="summary"
+      value={anonymizedDocument.replace(/\\n/g, "\n").replace(/"/g, "")}
+      bind:correctedAnonymizedDocument
+    />
+    <Checkbox bind:verified>I have verified that the anonymization process was successful.</Checkbox>
+    <Button on:click={handleSummarization}>Submit</Button>
   {:catch error}
-    Something went wrong. Error code: <p style="color: red">{error.message}</p>
+    <Toast
+      bind:open={errorBadAnonymizationRequest}
+      type="error"
+      message={"The following error occurred: " + error.message}
+    />
   {/await}
 {/if}
+
+{#if summarizedDocumentPromise !== undefined}
+  {#await summarizedDocumentPromise}
+    <p>Processing...</p>
+  {:then summarizedDocument}
+    <Label for="summary-id">Summary:</Label>
+    <P id="summary-id">{summarizedDocument}</P>
+  {:catch error}
+    <Toast
+      bind:open={errorBadAnonymizationRequest}
+      type="error"
+      message={"The following error occurred: " + error.message}
+    />
+  {/await}
+{/if}
+
+<Toast
+  bind:open={errorUnverifiedSubmission}
+  type="error"
+  message="Please verify that the anonymization process was successful."
+/>
