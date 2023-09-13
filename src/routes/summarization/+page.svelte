@@ -33,11 +33,10 @@
       errorUnverifiedSubmission = true
       return
     }
-    const formData = new FormData()
-    formData.append("report", correctedAnonymizedDocument)
     summarizedDocumentPromise = fetch(`${API_ROUTE}/summarization/summarize_report`, {
       method: "POST",
-      body: formData
+      body: JSON.stringify({ text: correctedAnonymizedDocument }),
+      headers: { "Content-Type": "application/json" }
     }).then(async res => await res.text())
   }
 </script>
@@ -63,7 +62,9 @@
       value={anonymizedDocument.replace(/\\n/g, "\n").replace(/"/g, "")}
       bind:correctedAnonymizedDocument
     />
-    <Checkbox bind:verified>I have verified that the anonymization process was successful.</Checkbox>
+    <Checkbox bind:verified on:click={() => (verified = !verified)}
+      >I have verified that the anonymization process was successful.</Checkbox
+    >
     <Button on:click={handleSummarization}>Submit</Button>
   {:catch error}
     <Toast
