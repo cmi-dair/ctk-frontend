@@ -1,38 +1,17 @@
-# create-svelte
+# Clinician Toolkit Frontend
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This repository contains the frontend code for the clinician toolkit. It is a Svelte application that uses the [Flowbite](https://flowbite-svelte.com/) component library. It is deployed as a Docker container.
 
-## Creating a project
+## Getting Started
 
-If you're seeing this, you've probably already done this step. Congrats!
+To get started, clone this repository and run `npm install` to install the dependencies. Then, run `npm run dev` to start the development server. Alternatively, you can use the Docker container to run the application. To do this, run `docker build -t clinician-toolkit-frontend .` to build the container, then `docker run -p 3000:3000 clinician-toolkit-frontend` to run the container.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Deployment
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+The deployment of this application is handled by the [CTK-Orchestrator repository](https://github.com/cmi-dair/ctk-orchestrator). On each push to main, this repository will be built and deployed to the Github Container Registry.
 
-## Developing
+## Settings
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+The application is configured using environment variables. The following environment variables are used:
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+- `VITE_API_URL`: The URL of the backend API. Defaults to `http://localhost:8000`.
