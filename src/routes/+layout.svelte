@@ -1,14 +1,12 @@
 <script>
-  import "../app.postcss";
-  import Footer from "./Footer.svelte";
-  import NavBar from "./NavBar.svelte";
+  import "../app.postcss"
+  import NavBar from "../lib/components/NavBar/NavBar.svelte"
 </script>
 
-<div class="app dark:bg-gray-900 dark:text-white">
+<div class="app bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 antialiased">
   <NavBar />
-  <main>
+  <main class="pt-5">
     <slot />
-    <Footer />
   </main>
 </div>
 
