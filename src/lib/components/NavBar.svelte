@@ -17,7 +17,7 @@
   >
     <NavBrand href="/">
       <span class="self-center whitespace-nowrap text-2xl font-semibold text-gray-900 dark:text-white">
-        Clinican Toolkit
+        Clinician Toolkit
       </span>
     </NavBrand>
 
