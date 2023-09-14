@@ -1,17 +1,8 @@
 <script lang="ts">
   import { DarkMode, NavBrand, NavHamburger, NavLi, NavUl, Navbar } from "flowbite-svelte"
-  import { setContext } from "svelte"
-  import { writable, type Writable } from "svelte/store"
 
   let divClass = "w-full ml-auto md:block md:w-auto order-1 md:order-none"
   let ulClass = "flex flex-col my-4 md:flex-row md:my-0 text-sm font-medium text-gray-900 dark:text-gray-300 gap-4"
-
-  const drawerHiddenStore: Writable<boolean> = writable<boolean>(true)
-  setContext("drawer", drawerHiddenStore)
-
-  const toggleDrawer = () => {
-    drawerHiddenStore.update(state => !state)
-  }
 </script>
 
 <header

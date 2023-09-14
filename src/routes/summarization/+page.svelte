@@ -1,6 +1,6 @@
 <script lang="ts">
   import { API_ROUTE } from "$lib/api/constants"
-  import Toast from "$lib/components/toast.svelte"
+  import Toast from "$lib/components/Toast.svelte"
   import { Button, Checkbox, Label, P, Textarea } from "flowbite-svelte"
 
   let anonymizedDocumentPromise: Promise<string> | undefined = undefined

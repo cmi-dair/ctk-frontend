@@ -1,6 +1,6 @@
 <script>
+  import NavBar from "$lib/components/NavBar.svelte"
   import "../app.postcss"
-  import NavBar from "../lib/components/NavBar/NavBar.svelte"
 </script>
 
 <div class="app bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 antialiased">
