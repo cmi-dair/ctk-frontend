@@ -30,6 +30,7 @@
       activeClass="md:!pl-3 md:!py-2 md:!pl-0 text-white bg-primary-700 md:bg-transparent md:text-primary-700 md:dark:text-primary-700 dark:bg-primary-600 md:dark:bg-transparent cursor-default"
     >
       <NavLi href="/">Home</NavLi>
+      <NavLi href="/diagnoses">Diagnoses</NavLi>
       <NavLi href="/summarization">Summarization</NavLi>
     </NavUl>
 

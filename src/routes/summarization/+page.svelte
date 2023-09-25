@@ -1,14 +1,14 @@
 <script lang="ts">
   import { API_ROUTE } from "$lib/api/constants"
   import Toast from "$lib/components/Toast.svelte"
-  import { Button, Checkbox, Label, P, Textarea } from "flowbite-svelte"
+  import { anonymizedReport, summarizedReport } from "$lib/stores"
+  import { Button, Checkbox, Label, P, Spinner, Textarea } from "flowbite-svelte"
 
-  let anonymizedDocumentPromise: Promise<string> | undefined = undefined
-  let summarizedDocumentPromise: Promise<string> | undefined = undefined
   let verified = false
   let correctedAnonymizedDocument = ""
-  let errorUnverifiedSubmission = false
-  let errorBadAnonymizationRequest = false
+
+  $: anonymizedPromise = $anonymizedReport
+  $: summarizedPromise = $summarizedReport
 
   async function handleAnonymization() {
     const input = document.createElement("input")
@@ -20,24 +20,24 @@
       const file = input.files[0]
       const formData = new FormData()
       formData.append("docx_file", file)
-      anonymizedDocumentPromise = fetch(`${API_ROUTE}/summarization/anonymize_report`, {
-        method: "POST",
-        body: formData
-      }).then(async res => await res.text())
+      anonymizedReport.set(
+        fetch(`${API_ROUTE}/summarization/anonymize_report`, {
+          method: "POST",
+          body: formData
+        }).then(async res => await res.text())
+      )
     }
     input.click()
   }
 
   async function handleSummarization() {
-    if (!verified) {
-      errorUnverifiedSubmission = true
-      return
-    }
-    summarizedDocumentPromise = fetch(`${API_ROUTE}/summarization/summarize_report`, {
-      method: "POST",
-      body: JSON.stringify({ text: correctedAnonymizedDocument }),
-      headers: { "Content-Type": "application/json" }
-    }).then(async res => await res.text())
+    summarizedReport.set(
+      fetch(`${API_ROUTE}/summarization/summarize_report`, {
+        method: "POST",
+        body: JSON.stringify({ text: correctedAnonymizedDocument }),
+        headers: { "Content-Type": "application/json" }
+      }).then(async res => await res.text())
+    )
   }
 </script>
 
@@ -49,49 +49,32 @@
   <Button on:click={handleAnonymization}>Upload</Button>
 </div>
 
-{#if anonymizedDocumentPromise !== undefined}
-  {#await anonymizedDocumentPromise}
-    <p>Processing...</p>
-  {:then anonymizedDocument}
-    <Label for="summary-id">Anonymized Report:</Label>
-    <Textarea
-      label="Summary"
-      rows="10"
-      id="summary-id"
-      name="summary"
-      value={anonymizedDocument.replace(/\\n/g, "\n").replace(/"/g, "")}
-      bind:correctedAnonymizedDocument
-    />
-    <Checkbox bind:verified on:click={() => (verified = !verified)}
-      >I have verified that the anonymization process was successful.</Checkbox
-    >
-    <Button on:click={handleSummarization}>Submit</Button>
-  {:catch error}
-    <Toast
-      bind:open={errorBadAnonymizationRequest}
-      type="error"
-      message={"The following error occurred: " + error.message}
-    />
-  {/await}
-{/if}
+{#await anonymizedPromise}
+  <Spinner />
+{:then anonymizedText}
+  <Label for="summary-id">Anonymized Report:</Label>
+  <Textarea
+    label="Summary"
+    rows="10"
+    id="summary-id"
+    name="summary"
+    value={anonymizedText.replace(/\\n/g, "\n").replace(/"/g, "")}
+    disabled={anonymizedText === ""}
+    bind:correctedAnonymizedDocument
+  />
+  <Checkbox bind:verified on:click={() => (verified = !verified)} disabled={anonymizedText === ""}>
+    I have verified that the anonymization process was successful.</Checkbox
+  >
+  <Button on:click={handleSummarization} disabled={!verified}>Submit</Button>
+{:catch error}
+  <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
+{/await}
 
-{#if summarizedDocumentPromise !== undefined}
-  {#await summarizedDocumentPromise}
-    <p>Processing...</p>
-  {:then summarizedDocument}
-    <Label for="summary-id">Summary:</Label>
-    <P id="summary-id">{summarizedDocument}</P>
-  {:catch error}
-    <Toast
-      bind:open={errorBadAnonymizationRequest}
-      type="error"
-      message={"The following error occurred: " + error.message}
-    />
-  {/await}
-{/if}
-
-<Toast
-  bind:open={errorUnverifiedSubmission}
-  type="error"
-  message="Please verify that the anonymization process was successful."
-/>
+{#await summarizedPromise}
+  <Spinner />
+{:then summarizedText}
+  <Label for="summary-id">Summary:</Label>
+  <P id="summary-id">{summarizedText}</P>
+{:catch error}
+  <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
+{/await}
