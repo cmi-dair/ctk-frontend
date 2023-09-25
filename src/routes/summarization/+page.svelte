@@ -1,44 +1,14 @@
 <script lang="ts">
-  import { API_ROUTE } from "$lib/api/constants"
   import Toast from "$lib/components/Toast.svelte"
   import { anonymizedReport, summarizedReport } from "$lib/stores"
   import { Button, Checkbox, Label, P, Spinner, Textarea } from "flowbite-svelte"
+  import { handleAnonymization, handleSummarization } from "./requests"
 
   let verified = false
-  let correctedAnonymizedDocument = ""
+  let correctedAnonymizedDocument: string = ""
 
   $: anonymizedPromise = $anonymizedReport
   $: summarizedPromise = $summarizedReport
-
-  async function handleAnonymization() {
-    const input = document.createElement("input")
-    input.type = "file"
-    input.accept = ".docx"
-    input.multiple = false
-    input.onchange = async () => {
-      if (!input.files) return
-      const file = input.files[0]
-      const formData = new FormData()
-      formData.append("docx_file", file)
-      anonymizedReport.set(
-        fetch(`${API_ROUTE}/summarization/anonymize_report`, {
-          method: "POST",
-          body: formData
-        }).then(async res => await res.text())
-      )
-    }
-    input.click()
-  }
-
-  async function handleSummarization() {
-    summarizedReport.set(
-      fetch(`${API_ROUTE}/summarization/summarize_report`, {
-        method: "POST",
-        body: JSON.stringify({ text: correctedAnonymizedDocument }),
-        headers: { "Content-Type": "application/json" }
-      }).then(async res => await res.text())
-    )
-  }
 </script>
 
 <p>
@@ -65,7 +35,7 @@
   <Checkbox bind:verified on:click={() => (verified = !verified)} disabled={anonymizedText === ""}>
     I have verified that the anonymization process was successful.</Checkbox
   >
-  <Button on:click={handleSummarization} disabled={!verified}>Submit</Button>
+  <Button on:click={() => handleSummarization(correctedAnonymizedDocument)} disabled={!verified}>Submit</Button>
 {:catch error}
   <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
 {/await}

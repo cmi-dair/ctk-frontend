@@ -29,9 +29,8 @@
   /**
    * Function that triggers when the category label is changed.
    * @param {string} label - The label of the category that was changed.
-   * @returns {void}
    */
-  function onChange(label: string) {
+  function onChange(label: string): void {
     toggleOthers(label)
     dispatch("change", label)
   }
@@ -41,7 +40,7 @@
    *
    * @param {string} key - The key to exclude from toggling to false.
    */
-  function toggleOthers(key: string) {
+  function toggleOthers(key: string): void {
     for (const toggleKey in toggles) {
       if (toggleKey !== key) {
         toggles[toggleKey] = false
@@ -50,10 +49,16 @@
   }
 </script>
 
-<div class="flex items-center">
+<div class="flex flex-wrap">
   {#each labels as label}
-    <div class="flex items-center mb-2">
-      <Toggle name="tree" bind:checked={toggles[label]} value={label} on:change={() => onChange(label)} />
+    <div class="flex items-center mb-2 mr-2">
+      <Toggle
+        name="tree"
+        bind:checked={toggles[label]}
+        value={label}
+        on:change={() => onChange(label)}
+        aria-label={"Toggle: " + label}
+      />
       <span>{label}</span>
     </div>
   {/each}

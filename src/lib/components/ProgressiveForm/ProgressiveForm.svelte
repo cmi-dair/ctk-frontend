@@ -12,7 +12,8 @@
   current level when a selection is made.
 -->
 <script lang="ts">
-  import { Hr, P } from "flowbite-svelte"
+  import { Button, Hr, P } from "flowbite-svelte"
+  import Toast from "../Toast.svelte"
   import Category from "./Category.svelte"
   import { getLabels, getSelections, getText, objectDepth } from "./utils"
 
@@ -24,6 +25,7 @@
   let hidden = [false, ...Array(maxDepth - 1).fill(true)]
   let labels = [Object.keys(tree), ...Array(maxDepth - 1).fill(undefined)]
   let text: string | undefined = undefined
+  let triggerCopyToast = false
 
   /**
    * Resets the toggles array for all levels below the current level when a selection is made.
@@ -33,6 +35,17 @@
   function resetToggles(toggles: { [key: string]: boolean }[], depth: number) {
     for (let i = depth + 1; i < toggles.length; i++) {
       toggles[i] = {}
+    }
+  }
+
+  /**
+   * Function that is called when a button is clicked.
+   * @param {string} text - The text to be passed as an argument.
+   */
+  function onButtonClick(text: string) {
+    triggerCopyToast = true
+    return () => {
+      navigator.clipboard.writeText(text)
     }
   }
 
@@ -53,8 +66,11 @@
   </div>
 {/each}
 
-{#if text}
+{#if text !== undefined}
+  <Button on:click={onButtonClick(text)} aria-label="Copy text to clipboard">Copy</Button>
   <P>
     {text}
   </P>
 {/if}
+
+<Toast bind:open={triggerCopyToast} message="Copied to clipboard" type="success" />
