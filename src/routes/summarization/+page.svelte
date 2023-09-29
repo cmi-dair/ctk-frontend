@@ -1,3 +1,10 @@
+<!--
+  This component is responsible for rendering the UI for the summarization page.
+  It contains a button to upload the clinical report, a textarea to display the anonymized report,
+  a checkbox to verify that the anonymization process was successful, and a button to submit the
+  anonymized report for summarization.
+-->
+
 <script lang="ts">
   import Toast from "$lib/components/Toast.svelte"
   import { anonymizedReport, summarizedReport } from "$lib/stores"
@@ -9,6 +16,18 @@
 
   $: anonymizedPromise = $anonymizedReport
   $: summarizedPromise = $summarizedReport
+
+  /**
+   * This function handles the input event for the anonymized document textarea.
+   * It sets the value of the correctedAnonymizedDocument variable to the value of the textarea.
+   * @param {Event} e - The input event.
+   * @returns {void}
+   */
+  function handleInput(e: Event): void {
+    if (!(e instanceof InputEvent)) return
+    const target = e.target as HTMLTextAreaElement
+    correctedAnonymizedDocument = target.value
+  }
 </script>
 
 <p>
@@ -30,7 +49,7 @@
     name="summary"
     value={anonymizedText.replace(/\\n/g, "\n").replace(/"/g, "")}
     disabled={anonymizedText === ""}
-    bind:correctedAnonymizedDocument
+    on:input={e => handleInput(e)}
   />
   <Checkbox bind:verified on:click={() => (verified = !verified)} disabled={anonymizedText === ""}>
     I have verified that the anonymization process was successful.</Checkbox

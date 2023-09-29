@@ -1,3 +1,8 @@
+<!--
+The layout component for the application.
+
+@slot - The content to be displayed in the main section of the layout.
+-->
 <script>
   import NavBar from "$lib/components/NavBar.svelte"
   import "../app.postcss"
