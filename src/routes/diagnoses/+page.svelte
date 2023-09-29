@@ -1,3 +1,8 @@
+<!--
+  The page for selecting diagnoses. It contains a form that allows the user to select a diagnosis from a tree of
+  diagnoses. Once a diagnosis is selected, a text will appear that can be copied and pasted into the report.
+-->
+
 <script lang="ts">
   import { API_ROUTE } from "$lib/api/constants"
   import ProgressiveForm from "$lib/components/ProgressiveForm/ProgressiveForm.svelte"
