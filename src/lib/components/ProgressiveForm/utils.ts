@@ -1,13 +1,13 @@
-import type { TreeNode } from "../../utils"
+import type { TreeNode } from "$lib/utils"
 
 /**
  * Returns an array of selected keys from an array of toggle objects.
  * @param toggles - An array of toggle objects.
  * @returns An array of selected keys.
  */
-export function getSelections(toggles: TreeNode[]): (string | undefined)[] {
+export function getSelections(toggles: { [key: string]: boolean }[]): (string | undefined)[] {
   return toggles.map(toggle => {
-    return Object.keys(toggle).find(key => toggle[key as keyof TreeNode])
+    return Object.keys(toggle).find(key => toggle[key])
   })
 }
 
