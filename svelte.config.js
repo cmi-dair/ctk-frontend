@@ -16,6 +16,9 @@ const config = {
       envPrefix: "",
       polyfill: true
     })
+  },
+  compilerOptions: {
+    accessors: true
   }
 }
 

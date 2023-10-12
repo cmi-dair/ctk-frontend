@@ -1,6 +1,8 @@
 <script lang="ts">
   import { DarkMode, NavBrand, NavHamburger, NavLi, NavUl, Navbar } from "flowbite-svelte"
 
+  export let brandText: string
+
   let divClass = "w-full ml-auto md:block md:w-auto order-1 md:order-none"
   let ulClass = "flex flex-col my-4 md:flex-row md:my-0 text-sm font-medium text-gray-900 dark:text-gray-300 gap-4"
 </script>
@@ -17,7 +19,7 @@
   >
     <NavBrand href="/">
       <span class="self-center whitespace-nowrap text-2xl font-semibold text-gray-900 dark:text-white">
-        Clinician Toolkit
+        {brandText}
       </span>
     </NavBrand>
 

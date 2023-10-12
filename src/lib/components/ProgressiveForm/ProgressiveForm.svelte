@@ -10,39 +10,42 @@
   options at the deepest level of the tree. The component also includes a
   resetToggles function that resets the toggles array for all levels below the
   current level when a selection is made.
+
 -->
 <script lang="ts">
+  import type { TreeNode } from "$lib/utils"
   import { Button, Hr, P } from "flowbite-svelte"
   import Toast from "../Toast.svelte"
   import Category from "./Category.svelte"
-  import { getLabels, getSelections, getText, objectDepth } from "./utils"
+  import { getLabelsAndText, getSelections } from "./utils"
 
-  export let tree: { [key: string]: any }
+  export let tree: TreeNode[]
+  const createEmptyArray = <T>(value: T) => Array(maxDepth).fill(value)
 
-  const maxDepth = objectDepth(tree)
-  let toggles: { [key: string]: boolean }[] = Array(maxDepth).fill(undefined)
-  let selections: (undefined | string)[] = Array(maxDepth).fill(undefined)
-  let hidden = [false, ...Array(maxDepth - 1).fill(true)]
-  let labels = [Object.keys(tree), ...Array(maxDepth - 1).fill(undefined)]
+  const maxDepth = tree[0].getDepth() + 1
+
+  let toggles = createEmptyArray({})
+  let labels = createEmptyArray(undefined)
   let text: string | undefined = undefined
   let triggerCopyToast = false
 
+  export function getToggles() {
+    return toggles
+  }
+
   /**
    * Resets the toggles array for all levels below the current level when a selection is made.
-   * @param {Object[]} toggles - The toggles array.
    * @param {number} depth - The current depth of the tree.
    */
-  function resetToggles(toggles: { [key: string]: boolean }[], depth: number) {
-    for (let i = depth + 1; i < toggles.length; i++) {
-      toggles[i] = {}
-    }
+  function resetToggles(depth: number) {
+    toggles = toggles.map((toggle, index) => (index > depth ? {} : toggle))
   }
 
   /**
    * Function that is called when a button is clicked.
    * @param {string} text - The text to be passed as an argument.
    */
-  function onButtonClick(text: string) {
+  function onCopyButtonClick(text: string) {
     triggerCopyToast = true
     return () => {
       navigator.clipboard.writeText(text)
@@ -50,24 +53,26 @@
   }
 
   $: {
-    selections = getSelections(toggles)
-    labels = getLabels(tree, selections)
-    text = getText(tree, selections)
-    hidden = labels.map(value => value === undefined)
+    ;({ labels, text } = getLabelsAndText(tree, getSelections(toggles)))
   }
 </script>
 
-{#each Array.from({ length: maxDepth }, (_, i) => i) as depth}
+{#each toggles as toggle, depth}
   <div>
-    {#if !hidden[depth]}
-      <Category labels={labels[depth]} bind:toggles={toggles[depth]} on:change={() => resetToggles(toggles, depth)} />
+    {#if labels[depth]}
+      <Category
+        labels={labels[depth]}
+        bind:toggles={toggle}
+        on:change={() => resetToggles(depth)}
+        testIdBase={"testid-category-" + depth}
+      />
       <Hr />
     {/if}
   </div>
 {/each}
 
-{#if text !== undefined}
-  <Button on:click={onButtonClick(text)} aria-label="Copy text to clipboard">Copy</Button>
+{#if text}
+  <Button on:click={onCopyButtonClick(text)} aria-label="Copy text to clipboard">Copy</Button>
   <P>
     {text}
   </P>
