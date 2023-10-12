@@ -56,7 +56,7 @@
 </script>
 
 <div class="flex flex-wrap">
-  {#each labels as label, i}
+  {#each labels as label, index}
     <div class="flex items-center mb-2 mr-2">
       <Toggle
         name="tree"
@@ -64,7 +64,7 @@
         value={label}
         on:change={() => onChange(label)}
         aria-label={"Toggle: " + label}
-        data-testid={`${testIdBase}-${i}`}
+        data-testid={`${testIdBase}-${index}`}
       />
       <span>{label}</span>
     </div>
