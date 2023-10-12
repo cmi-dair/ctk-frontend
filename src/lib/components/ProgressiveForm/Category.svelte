@@ -10,12 +10,12 @@
   - labels: an array of strings representing the labels for the toggles.
   - toggles: an object representing whether the toggles are checked or not, with
       the keys being the labels and the values being booleans.
-  - testId: a string representing the test id for the toggles.
+  - testIdBase: a string representing the test id for the toggles.
 
   This component emits a 'change' event with the label of the toggle that was changed.
 
   Example usage:
-  <Category labels={['Option 1', 'Option 2', 'Option 3']} toggles={{'Option 1': true, 'Option 2': false, 'Option 3': false}} testId="category-toggles" on:change={handleToggleChange} />
+  <Category labels={['Option 1', 'Option 2', 'Option 3']} toggles={{'Option 1': true, 'Option 2': false, 'Option 3': false}} testIdBase="category-toggles" on:change={handleToggleChange} />
 -->
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
