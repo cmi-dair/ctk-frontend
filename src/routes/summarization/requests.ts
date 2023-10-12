@@ -1,4 +1,4 @@
-import { API_ROUTE } from "$lib/api/constants"
+import { API_ROUTE } from "$lib/api"
 import { anonymizedReport, summarizedReport } from "$lib/stores"
 
 export async function handleAnonymization() {

@@ -9,7 +9,7 @@ The layout component for the application.
 </script>
 
 <div class="app bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 antialiased">
-  <NavBar />
+  <NavBar brandText="Clinician Toolkit" />
   <main class="pt-5 w-full">
     <slot />
   </main>
