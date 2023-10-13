@@ -14,7 +14,7 @@
 <script lang="ts">
   import type { TreeNode } from "$lib/utils"
   import { Hr } from "flowbite-svelte"
-  import { onMount } from "svelte"
+  import { onDestroy, onMount } from "svelte"
   import Node from "./Node.svelte"
   import { diagnosisText } from "./componentStore"
 
@@ -64,6 +64,12 @@
       setDiagnosisText()
     }
   }
+
+  onDestroy(() => {
+    // There's probably a cleaner way to prevent diagnosisText from
+    // persisting between renders, but this works for now.
+    diagnosisText.set(undefined)
+  })
 </script>
 
 {#if node.header}
