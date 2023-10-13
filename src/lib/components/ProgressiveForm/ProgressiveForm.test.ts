@@ -5,14 +5,16 @@ import ProgressiveForm from "./ProgressiveForm.svelte"
 describe("ProgressiveForm component", () => {
   const mockTree = [
     new TreeNode({
+      header: true,
       text: "Root",
       children: [
-        { text: "Child 1", children: [{ text: "Paragraph", children: [] }] },
+        { header: true, text: "Child 1", children: [{ header: false, text: "Paragraph", children: [] }] },
         {
+          header: true,
           text: "Child 2",
           children: [
-            { text: "Grandchild 1", children: [] },
-            { text: "Grandchild 2", children: [] }
+            { header: true, text: "Grandchild 1", children: [] },
+            { header: true, text: "Grandchild 2", children: [] }
           ]
         }
       ]
@@ -25,24 +27,7 @@ describe("ProgressiveForm component", () => {
     const categories = getAllByTestId("testid-category-0-0")
 
     expect(categories.length).toBe(1)
-    expect((categories[0] as HTMLInputElement).value).toBe("Root")
-  })
-
-  test("adjusts the toggle state when a selection is made", async () => {
-    const { getByTestId, component } = render(ProgressiveForm, { tree: mockTree })
-
-    await fireEvent.click(getByTestId("testid-category-0-0"))
-
-    expect(component.getToggles()[0]).toEqual({ Root: true })
-  })
-
-  test("shows deeper toggles when parent is clicked", async () => {
-    const { getByTestId, queryByTestId } = render(ProgressiveForm, { tree: mockTree })
-
-    await fireEvent.click(getByTestId("testid-category-0-0"))
-
-    expect(getByTestId("testid-category-1-0")).toBeVisible()
-    expect(queryByTestId("testid-category-2-0")).toBeNull() // Grand children.
+    expect((categories[0] as HTMLInputElement).value).toBe("Child 1")
   })
 
   test("copies text to clipboard when copy button is clicked", async () => {
@@ -53,7 +38,6 @@ describe("ProgressiveForm component", () => {
       }
     })
     await fireEvent.click(getByTestId("testid-category-0-0"))
-    await fireEvent.click(getByTestId("testid-category-1-0"))
 
     await fireEvent.click(getByText("Copy"))
 

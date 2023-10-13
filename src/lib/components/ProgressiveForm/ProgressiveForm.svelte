@@ -14,68 +14,13 @@
 -->
 <script lang="ts">
   import type { TreeNode } from "$lib/utils"
-  import { Button, Hr, P } from "flowbite-svelte"
-  import Toast from "../Toast.svelte"
-  import Category from "./Category.svelte"
-  import { getLabelsAndText, getSelections } from "./utils"
+  import RecursiveTree from "./RecursiveTree.svelte"
+  import TemplateTextBox from "./TemplateTextBox.svelte"
 
   export let tree: TreeNode[]
-  const createEmptyArray = <T>(value: T) => Array(maxDepth).fill(value)
 
-  const maxDepth = tree[0].getDepth() + 1
-
-  let toggles = createEmptyArray({})
-  let labels = createEmptyArray(undefined)
-  let text: string | undefined = undefined
-  let triggerCopyToast = false
-
-  export function getToggles() {
-    return toggles
-  }
-
-  /**
-   * Resets the toggles array for all levels below the current level when a selection is made.
-   * @param {number} depth - The current depth of the tree.
-   */
-  function resetToggles(depth: number) {
-    toggles = toggles.map((toggle, index) => (index > depth ? {} : toggle))
-  }
-
-  /**
-   * Function that is called when a button is clicked.
-   * @param {string} text - The text to be passed as an argument.
-   */
-  function onCopyButtonClick(text: string) {
-    triggerCopyToast = true
-    return () => {
-      navigator.clipboard.writeText(text)
-    }
-  }
-
-  $: {
-    ;({ labels, text } = getLabelsAndText(tree, getSelections(toggles)))
-  }
+  const root = tree[0]
 </script>
 
-{#each toggles as toggle, depth}
-  <div>
-    {#if labels[depth]}
-      <Category
-        labels={labels[depth]}
-        bind:toggles={toggle}
-        on:change={() => resetToggles(depth)}
-        testIdBase={"testid-category-" + depth}
-      />
-      <Hr />
-    {/if}
-  </div>
-{/each}
-
-{#if text}
-  <Button on:click={onCopyButtonClick(text)} aria-label="Copy text to clipboard">Copy</Button>
-  <P>
-    {text}
-  </P>
-{/if}
-
-<Toast bind:open={triggerCopyToast} message="Copied to clipboard" type="success" />
+<RecursiveTree node={root} />
+<TemplateTextBox />

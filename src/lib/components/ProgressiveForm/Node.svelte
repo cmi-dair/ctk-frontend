@@ -6,7 +6,7 @@
 
   @event {string} change - The label of the toggle that was changed.
 
-  This component renders a list of toggles with labels. It accepts two props:
+  This component renders a list of toggles with labels. It accepts three props:
   - labels: an array of strings representing the labels for the toggles.
   - toggles: an object representing whether the toggles are checked or not, with
       the keys being the labels and the values being booleans.
@@ -18,9 +18,8 @@
   <Category labels={['Option 1', 'Option 2', 'Option 3']} toggles={{'Option 1': true, 'Option 2': false, 'Option 3': false}} testIdBase="category-toggles" on:change={handleToggleChange} />
 -->
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-
   import { Toggle } from "flowbite-svelte"
+  import { createEventDispatcher } from "svelte"
 
   export let labels: string[]
   export let toggles: { [key: string]: boolean } = {}

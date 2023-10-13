@@ -4,6 +4,7 @@
 interface ApiTreeNodeResponse {
   text: string
   children: ApiTreeNodeResponse[]
+  header: boolean
 }
 
 /**
@@ -12,9 +13,11 @@ interface ApiTreeNodeResponse {
 export class TreeNode {
   text: string
   children: TreeNode[]
+  header: boolean
 
   constructor(tree: ApiTreeNodeResponse) {
     this.text = tree.text
+    this.header = tree.header
     this.children = tree.children.map(child => new TreeNode(child))
   }
 
