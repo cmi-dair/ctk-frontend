@@ -1,10 +1,10 @@
-import { TreeNode } from "$lib/utils"
+import { DecisionTree } from "$lib/utils"
 import { fireEvent, render } from "@testing-library/svelte"
 import ProgressiveForm from "./ProgressiveForm.svelte"
 
 describe("ProgressiveForm component", () => {
   const mockTree = [
-    new TreeNode({
+    new DecisionTree({
       header: true,
       text: "Root",
       children: [

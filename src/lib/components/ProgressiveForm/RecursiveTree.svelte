@@ -9,46 +9,39 @@
 
     Example usage:
     <RecursiveCategory node={root} />
-
  -->
 <script lang="ts">
-  import type { TreeNode } from "$lib/utils"
-  import { Hr } from "flowbite-svelte"
-  import { onDestroy, onMount } from "svelte"
-  import Node from "./Node.svelte"
-  import { diagnosisText } from "./componentStore"
+  import type { DecisionTree } from "$lib/utils"
+  import { Hr, Toggle } from "flowbite-svelte"
+  import { createEventDispatcher, onMount } from "svelte"
 
-  export let node: TreeNode
+  export let node: DecisionTree
   export let _depth: number = 0
 
-  let child: TreeNode | undefined = undefined
-  let toggles: { [key: string]: boolean } = {}
+  let child: DecisionTree | undefined = undefined
+  let toggles: { [key: string]: boolean } = node.getSelectedInChildren()
   let labels: string[]
 
-  /**
-   * Determines whether a child node should be rendered. The final node should
-   * not be rendered, but all other nodes should be rendered.
-   * @param {TreeNode | undefined} childNode - The child node to check.
-   * @returns {boolean} - Whether the child node should be rendered.
-   */
-  function shouldRenderChild(childNode: TreeNode | undefined): boolean {
+  const dispatch = createEventDispatcher()
+  const testIdBase: string = "testid-category"
+
+  function shouldRenderChild(childNode: DecisionTree | undefined): boolean {
     if (!childNode) return false
     return childNode.children.length > 1 || childNode.children[0].header
   }
 
-  /**
-   * Sets the diagnosis text based on the current child node. If the child node
-   * is the final node, the diagnosis text is set to the text of the child node.
-   * If the child node is not the final node, the diagnosis text is set to
-   * undefined.
-   */
-  function setDiagnosisText(): void {
-    if (!child) return
-    if (!shouldRenderChild(child)) {
-      diagnosisText.set(child.children[0].text)
-      return
-    }
-    diagnosisText.set(undefined)
+  function onToggleChange(label: string): void {
+    const selectedChild = node.children.find(child => child.text === label)
+    if (!selectedChild) return
+    node.setAllSelected(false)
+    node.selected = true
+    selectedChild.selected = toggles[label]
+    toggles = node.getSelectedInChildren()
+    dispatch("change")
+  }
+
+  function onChildToggleChange(): void {
+    dispatch("change")
   }
 
   onMount(() => {
@@ -58,25 +51,28 @@
   })
 
   $: labels = node.children.map(child => child.text)
-  $: child = node.children.find(child => toggles[child.text])
-  $: {
-    if (child) {
-      setDiagnosisText()
-    }
-  }
-
-  onDestroy(() => {
-    // There's probably a cleaner way to prevent diagnosisText from
-    // persisting between renders, but this works for now.
-    diagnosisText.set(undefined)
-  })
+  $: toggles, (child = node.children.find(child => toggles[child.text]))
 </script>
 
 {#if node.header}
-  <Node {labels} bind:toggles testIdBase={"testid-category-" + _depth} />
+  <div class="columns-2xs">
+    {#each labels as label, index}
+      <div class="flex items-center mb-2 mr-2">
+        <Toggle
+          name="tree"
+          bind:checked={toggles[label]}
+          value={label}
+          on:change={() => onToggleChange(label)}
+          aria-label={"Toggle: " + label}
+          data-testid={`${testIdBase}-${index}`}
+        />
+        <span>{label}</span>
+      </div>
+    {/each}
+  </div>
+{/if}
 
-  {#if shouldRenderChild(child)}
-    <Hr />
-    <svelte:self bind:node={child} _depth={_depth + 1} />
-  {/if}
+{#if shouldRenderChild(child)}
+  <Hr />
+  <svelte:self bind:node={child} _depth={_depth + 1} on:change={() => onChildToggleChange()} />
 {/if}
