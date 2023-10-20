@@ -13,14 +13,46 @@
 
 -->
 <script lang="ts">
-  import type { TreeNode } from "$lib/utils"
+  import type { DecisionTree } from "$lib/utils"
+  import { Hr } from "flowbite-svelte"
+  import DecisionList from "./DecisionList.svelte"
   import RecursiveTree from "./RecursiveTree.svelte"
   import TemplateTextBox from "./TemplateTextBox.svelte"
+  import { Diagnosis } from "./utils"
 
-  export let tree: TreeNode[]
+  export let tree: DecisionTree[]
 
-  const root = tree[0]
+  let root = tree[0]
+  let selectedBranch = root
+  let selectedPath: string[] = []
+  let selectedText: string | undefined = undefined
+  let diagnoses: Diagnosis[] = []
+
+  function onToggleChange(): void {
+    selectedBranch = root.getSelection()
+    selectedPath = root.getPath()
+    if (selectedBranch.children[0].isLeaf()) {
+      selectedText = selectedBranch.text
+    } else {
+      selectedText = undefined
+    }
+  }
+
+  function saveDiagnosis(): void {
+    if (!selectedText) return
+    const diagnosis = new Diagnosis(selectedText, selectedPath)
+    if (diagnoses.find(d => d.text === diagnosis.text)) return
+    diagnoses = [...diagnoses, diagnosis]
+  }
 </script>
 
-<RecursiveTree node={root} />
-<TemplateTextBox />
+<RecursiveTree bind:node={root} on:change={onToggleChange} />
+{#if selectedText}
+  <Hr />
+  <TemplateTextBox bind:text={selectedText} on:save={saveDiagnosis} />
+{/if}
+
+{#if diagnoses.length > 0}
+  <Hr />
+  <DecisionList bind:diagnoses />
+{/if}

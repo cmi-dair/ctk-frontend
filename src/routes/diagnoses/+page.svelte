@@ -7,14 +7,14 @@
   import { API_ROUTE } from "$lib/api"
   import ProgressiveForm from "$lib/components/ProgressiveForm/ProgressiveForm.svelte"
   import { diagnosesTree } from "$lib/stores"
-  import { TreeNode } from "$lib/utils"
+  import { DecisionTree } from "$lib/utils"
   import { P, Spinner } from "flowbite-svelte"
   import { onMount } from "svelte"
 
   onMount(async () => {
     const response = await fetch(`${API_ROUTE}/diagnoses`)
     const diagnoses = await response.json()
-    const tree = diagnoses.map((diagnosis: any) => new TreeNode(diagnosis))
+    const tree = diagnoses.map((diagnosis: any) => new DecisionTree(diagnosis))
     diagnosesTree.set(tree)
   })
 </script>
