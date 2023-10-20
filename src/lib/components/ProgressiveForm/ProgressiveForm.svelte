@@ -46,7 +46,7 @@
   }
 </script>
 
-<RecursiveTree node={root} on:change={onToggleChange} />
+<RecursiveTree bind:node={root} on:change={onToggleChange} />
 {#if selectedText}
   <Hr />
   <TemplateTextBox bind:text={selectedText} on:save={saveDiagnosis} />
