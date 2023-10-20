@@ -44,7 +44,7 @@
   $: [icon, color] = getIconAndColor()
 </script>
 
-<Toast position="bottom-right" {color} bind:open>
+<Toast position="bottom-left" {color} bind:open>
   <svelte:fragment slot="icon">
     <svelte:component this={icon} />
     <span class="sr-only">Icon</span>

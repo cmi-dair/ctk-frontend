@@ -53,6 +53,5 @@
 {/if}
 
 {#if diagnoses.length > 0}
-  <Hr />
   <DecisionList bind:diagnoses />
 {/if}

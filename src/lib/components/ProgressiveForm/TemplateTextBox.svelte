@@ -22,10 +22,10 @@
     <b>Template Text</b>
     <ToolbarGroup name="controls" slot="end">
       <ToolbarButton name="save" on:click={() => dispatch("save")}>
-        <div class="flex align-middle"><FileCheckSolid disabled />Save</div>
+        <div class="flex align-middle"><FileCheckSolid disabled class="pointer-events-none" />Save</div>
       </ToolbarButton>
       <ToolbarButton name="copy" on:click={onCopyButtonClick(text)}
-        ><div class="flex align-middle"><CopySolid disabled />Copy</div></ToolbarButton
+        ><div class="flex align-middle"><CopySolid disabled class="pointer-events-none" />Copy</div></ToolbarButton
       >
     </ToolbarGroup>
   </Toolbar>
