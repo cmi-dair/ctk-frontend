@@ -13,26 +13,30 @@
 
 -->
 <script lang="ts">
+  import Toast from "$lib/components/Toast.svelte"
   import type { DecisionTree } from "$lib/utils"
-  import { Hr } from "flowbite-svelte"
-  import DecisionList from "./DecisionList.svelte"
+  import { Button, Hr } from "flowbite-svelte"
+  import DiagnosisCheckout from "./DiagnosisCheckout.svelte"
   import RecursiveTree from "./RecursiveTree.svelte"
   import TemplateTextBox from "./TemplateTextBox.svelte"
   import { Diagnosis } from "./utils"
 
   export let tree: DecisionTree[]
 
+  let openModal = false
   let root = tree[0]
   let selectedBranch = root
   let selectedPath: string[] = []
   let selectedText: string | undefined = undefined
   let diagnoses: Diagnosis[] = []
 
+  let toastWarningNoDiagnosesSelected = false
+
   function onToggleChange(): void {
     selectedBranch = root.getSelection()
     selectedPath = root.getPath()
     if (selectedBranch.children[0].isLeaf()) {
-      selectedText = selectedBranch.text
+      selectedText = selectedBranch.children[0].text
     } else {
       selectedText = undefined
     }
@@ -44,6 +48,14 @@
     if (diagnoses.find(d => d.text === diagnosis.text)) return
     diagnoses = [...diagnoses, diagnosis]
   }
+
+  function onOpenModal(): void {
+    if (diagnoses.length === 0) {
+      toastWarningNoDiagnosesSelected = true
+      return
+    }
+    openModal = true
+  }
 </script>
 
 <RecursiveTree bind:node={root} on:change={onToggleChange} />
@@ -52,6 +64,7 @@
   <TemplateTextBox bind:text={selectedText} on:save={saveDiagnosis} />
 {/if}
 
-{#if diagnoses.length > 0}
-  <DecisionList bind:diagnoses />
-{/if}
+<Button class="end-0 bottom-0" on:click={onOpenModal}>Show {diagnoses.length} diagnoses</Button>
+<DiagnosisCheckout bind:diagnoses bind:open={openModal} />
+
+<Toast type="warning" bind:open={toastWarningNoDiagnosesSelected} message="No diagnoses selected." />

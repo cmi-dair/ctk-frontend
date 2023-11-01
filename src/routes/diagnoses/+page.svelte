@@ -21,7 +21,8 @@
 
 <P class="mb-5">
   Please select a diagnosis that applies to your patient. Once you have selected a diagnosis, a text will appear that
-  you can copy and paste into your report.
+  allows you to save this text. Once you've saved all texts you're interested in, you can click the "Show Diagnosis"
+  button to fill in the requisite information and generate the report text.
 </P>
 {#if !$diagnosesTree}
   <Spinner />
