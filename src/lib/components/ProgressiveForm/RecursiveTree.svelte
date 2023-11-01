@@ -16,7 +16,6 @@
   import { createEventDispatcher, onMount } from "svelte"
 
   export let node: DecisionTree
-  export let _depth: number = 0
 
   let child: DecisionTree | undefined = undefined
   let toggles: { [key: string]: boolean } = node.getSelectedInChildren()
@@ -74,5 +73,5 @@
 
 {#if shouldRenderChild(child)}
   <Hr />
-  <svelte:self bind:node={child} _depth={_depth + 1} on:change={() => onChildToggleChange()} />
+  <svelte:self bind:node={child} on:change={() => onChildToggleChange()} />
 {/if}
