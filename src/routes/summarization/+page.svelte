@@ -14,17 +14,17 @@
   let verified = false
   let correctedAnonymizedDocument: string = ""
 
-  $: anonymizedPromise = $anonymizedReport
   $: summarizedPromise = $summarizedReport
+  $: $anonymizedReport,
+    $anonymizedReport
+      .then(anonymizedText => {
+        correctedAnonymizedDocument = anonymizedText.replace(/\\n/g, "\n").replace(/"/g, "")
+      })
+      .catch(error => {
+        console.error("Error in anonymization:", error)
+      })
 
-  /**
-   * This function handles the input event for the anonymized document textarea.
-   * It sets the value of the correctedAnonymizedDocument variable to the value of the textarea.
-   * @param {Event} e - The input event.
-   * @returns {void}
-   */
-  function handleInput(e: Event): void {
-    if (!(e instanceof InputEvent)) return
+  function handleAnonymizedTextChange(e: Event) {
     const target = e.target as HTMLTextAreaElement
     correctedAnonymizedDocument = target.value
   }
@@ -38,23 +38,25 @@
   <Button on:click={handleAnonymization}>Upload</Button>
 </div>
 
-{#await anonymizedPromise}
+{#await $anonymizedReport}
   <Spinner />
-{:then anonymizedText}
-  <Label for="summary-id">Anonymized Report:</Label>
-  <Textarea
-    label="Summary"
-    rows="10"
-    id="summary-id"
-    name="summary"
-    value={anonymizedText.replace(/\\n/g, "\n").replace(/"/g, "")}
-    disabled={anonymizedText === ""}
-    on:input={e => handleInput(e)}
-  />
-  <Checkbox bind:verified on:click={() => (verified = !verified)} disabled={anonymizedText === ""}>
-    I have verified that the anonymization process was successful.</Checkbox
-  >
-  <Button on:click={() => handleSummarization(correctedAnonymizedDocument)} disabled={!verified}>Submit</Button>
+{:then _}
+  {#if correctedAnonymizedDocument}
+    <Label for="summary-id">Anonymized Report:</Label>
+    <Textarea
+      label="Summary"
+      rows="10"
+      id="summary-id"
+      name="summary"
+      value={correctedAnonymizedDocument}
+      on:change={handleAnonymizedTextChange}
+      disabled={correctedAnonymizedDocument === ""}
+    />
+    <Checkbox bind:verified on:click={() => (verified = !verified)} disabled={correctedAnonymizedDocument === ""}>
+      I have verified that the anonymization process was successful.</Checkbox
+    >
+    <Button on:click={() => handleSummarization(correctedAnonymizedDocument)} disabled={!verified}>Submit</Button>
+  {/if}
 {:catch error}
   <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
 {/await}
@@ -62,8 +64,10 @@
 {#await summarizedPromise}
   <Spinner />
 {:then summarizedText}
-  <Label for="summary-id">Summary:</Label>
-  <P id="summary-id">{summarizedText}</P>
+  {#if summarizedText}
+    <Label for="summary-id">Summary:</Label>
+    <P id="summary-id">{summarizedText}</P>
+  {/if}
 {:catch error}
   <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
 {/await}
