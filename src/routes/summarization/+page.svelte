@@ -7,14 +7,14 @@
 
 <script lang="ts">
   import Toast from "$lib/components/Toast.svelte"
-  import { anonymizedReport, summarizedReport } from "$lib/stores"
+  import { anonymizedReport } from "$lib/stores"
   import { Button, Checkbox, Label, P, Spinner, Textarea } from "flowbite-svelte"
   import { handleAnonymization, handleSummarization } from "./requests"
 
   let verified = false
   let correctedAnonymizedDocument: string = ""
+  let summarizedPromise: Promise<void> | undefined = undefined
 
-  $: summarizedPromise = $summarizedReport
   $: $anonymizedReport,
     $anonymizedReport
       .then(anonymizedText => {
@@ -27,6 +27,12 @@
   function handleAnonymizedTextChange(e: Event) {
     const target = e.target as HTMLTextAreaElement
     correctedAnonymizedDocument = target.value
+  }
+
+  async function summarize(text: string) {
+    summarizedPromise = handleSummarization(text)
+    await summarizedPromise
+    summarizedPromise = undefined
   }
 </script>
 
@@ -55,7 +61,7 @@
     <Checkbox bind:verified on:click={() => (verified = !verified)} disabled={correctedAnonymizedDocument === ""}>
       I have verified that the anonymization process was successful.</Checkbox
     >
-    <Button on:click={() => handleSummarization(correctedAnonymizedDocument)} disabled={!verified}>Submit</Button>
+    <Button on:click={() => summarize(correctedAnonymizedDocument)} disabled={!verified}>Submit</Button>
   {/if}
 {:catch error}
   <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
@@ -63,11 +69,4 @@
 
 {#await summarizedPromise}
   <Spinner />
-{:then summarizedText}
-  {#if summarizedText}
-    <Label for="summary-id">Summary:</Label>
-    <P id="summary-id">{summarizedText}</P>
-  {/if}
-{:catch error}
-  <Toast open={true} type="error" message={"The following error occurred: " + error.message} />
 {/await}
