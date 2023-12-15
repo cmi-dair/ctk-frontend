@@ -1,5 +1,5 @@
 import { API_ROUTE } from "$lib/api"
-import { anonymizedReport, summarizedReport } from "$lib/stores"
+import { anonymizedReport } from "$lib/stores"
 
 export async function handleAnonymization() {
   const input = document.createElement("input")
@@ -21,12 +21,24 @@ export async function handleAnonymization() {
   input.click()
 }
 
-export async function handleSummarization(anonymizedDocument: string) {
-  summarizedReport.set(
-    fetch(`${API_ROUTE}/summarization/summarize_report`, {
-      method: "POST",
-      body: JSON.stringify({ text: anonymizedDocument }),
-      headers: { "Content-Type": "application/json" }
-    }).then(async res => await res.text())
-  )
+export async function handleSummarization(anonymizedDocument: string): Promise<void> {
+  const response = await fetch(`${API_ROUTE}/summarization/summarize_report`, {
+    method: "POST",
+    body: JSON.stringify({ text: anonymizedDocument }),
+    headers: { "Content-Type": "application/json" }
+  })
+
+  if (response.ok) {
+    const blob = await response.blob()
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "summarized_report.docx"
+    link.click()
+
+    URL.revokeObjectURL(url)
+  } else {
+    throw new Error("Failed to fetch summarized report")
+  }
 }
